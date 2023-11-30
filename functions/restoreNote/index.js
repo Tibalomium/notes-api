@@ -26,9 +26,9 @@ const restoreNote = async (event, context) => {
     let note = null;
     let noteIndex = 0;
     
-    let removedNotes = items.Item[0].removedNotes;
+    let removedNotes = items.Item[0]?.removedNotes;
     
-    if(removedNotes && id && removedNotes.notes.length > 0) { //There are notes and id 
+    if(removedNotes && id && removedNotes?.notes.length > 0) { //There are notes and id 
         removedNotes.notes.forEach((n, index) => {
             if (n.id === id) {
                 note = n;
