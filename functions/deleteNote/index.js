@@ -40,14 +40,14 @@ const deleteNote = async (event, context) => {
                     "notes": [noteToRemove]
                 }
             }
-            else if(removedNotes.notes?.length < 4) {
+            else if(removedNotes.notes?.length < 10) {
                 removedNotes.startIndex += 1;
                 removedNotes.notes.push(noteToRemove);
             }
             else {
                 removedNotes.notes[removedNotes.startIndex] = noteToRemove;
-                removedNotes.startIndex = (removedNotes.startIndex + 1) % 4;
-                removedNotes.endIndex = (removedNotes.endIndex + 1) % 4;
+                removedNotes.startIndex = (removedNotes.startIndex + 1) % 10;
+                removedNotes.endIndex = (removedNotes.endIndex + 1) % 10;
             }            
         }
     });
