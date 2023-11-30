@@ -56,6 +56,12 @@ functions:
       - httpApi:
           path: '/api/notes'
           method: DELETE
+  restoreNote:
+    handler: functions/restoreNote/index.handler
+    events:
+      - httpApi:
+          path: '/api/restoreNote'
+          method: POST
 
 resources:
   Resources:

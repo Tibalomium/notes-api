@@ -31,6 +31,7 @@ const saveNote = async (event, context) => {
         ]
     };
     
+    //Save note
     await db.update({
         TableName: 'notes-db',
         Key: { id: event.username },
