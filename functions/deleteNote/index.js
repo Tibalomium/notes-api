@@ -9,8 +9,15 @@ const deleteNote = async (event, context) => {
     if (event?.error && event?.error === '401')
         return sendResponse(401, {success: false , message: 'Invalid token' });
 
-    const {id} = JSON.parse(event.body);
+    let id;
+    try {
+        const input = JSON.parse(event.body);
+        id = input.id;
+    } catch(error) {
+        return sendRepsonse(400, {success: false, message:"wrong input"});
+    }
 
+    try {
     //Get notes
     const items = await db.query({
         TableName: 'notes-db',
@@ -65,7 +72,7 @@ const deleteNote = async (event, context) => {
     }).promise();
     
     //Remove note
-    try {
+
         await db.update({
             TableName: "notes-db",
             Key: {
@@ -73,11 +80,12 @@ const deleteNote = async (event, context) => {
             },
             UpdateExpression: "REMOVE notes[" + noteIndex + "]",
         }).promise();
-    } catch(error) {
 
-    }
 
     return sendResponse(200, {success : true, message: "EXTERMINATE!"});
+    } catch(error) {
+        return sendResponse(400,{sucess: false, message: "Coulc not remove note. EXTERMINATE"} )
+    }
 }
 
 const handler = middy(deleteNote)

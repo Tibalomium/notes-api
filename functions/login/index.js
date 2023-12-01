@@ -36,9 +36,17 @@ async function login(username, password) {
 }
 
 exports.handler = async (event) => {
-    const {username, password} = JSON.parse(event.body);
-    
-    const result = await login(username, password);
+    let input;
+
+    //check input
+    try {
+        input = JSON.parse(event.body);
+        if(!input.username || !input.password) throw new Error();
+    } catch(error) {
+        return sendResponse(400, {successs: false, message: "Input incorrect. EXTERMINATE"})
+    }
+
+    const result = await login(input.username, input.password);
     if(result.success) return sendResponse(200, result);
     else return sendResponse(400, result);
 }
