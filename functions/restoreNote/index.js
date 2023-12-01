@@ -10,7 +10,14 @@ const restoreNote = async (event, context) => {
     if (event?.error && event?.error === '401')
         return sendResponse(401, {success: false , message: 'Invalid token' });
     
-    const {id} = JSON.parse(event.body);
+    let input = null;
+
+    //try to parse body
+    try {
+        input = JSON.parse(event.body);
+    } catch(error) {
+
+    }
 
     const items = await db.query({
         TableName: 'notes-db',
@@ -26,16 +33,16 @@ const restoreNote = async (event, context) => {
     let note = null;
     let noteIndex = 0;
     
-    let removedNotes = items.Item[0]?.removedNotes;
+    let removedNotes = items.Items[0]?.removedNotes;
     
-    if(removedNotes && id && removedNotes?.notes.length > 0) { //There are notes and id 
+    if(removedNotes && input?.id && removedNotes?.notes.length > 0) { //There are notes and id
         removedNotes.notes.forEach((n, index) => {
-            if (n.id === id) {
+            if (n.id === input.id) {
                 note = n;
                 noteIndex = index;
             }
         });
-    } else if(removedNotes && removedNotes?.length > 0) { //No id, notes exist. Return last note
+    } else if(removedNotes && removedNotes.notes?.length > 0) { //No id, notes exist. Return last note
         note = removedNotes.notes[removedNotes.endIndex];
         noteIndex = removedNotes.endIndex;
     }
@@ -46,9 +53,12 @@ const restoreNote = async (event, context) => {
     let newRemovedNotes = removedNotes.notes.filter((note, index) => index !== noteIndex);
     
     removedNotes.startIndex = 0;
-    removedNotes.endIndex = removedNotes.notes.length > 0 ? removedNotes.notes.length -1 : 0;
+    removedNotes.endIndex = newRemovedNotes.length > 0 ? newRemovedNotes.length - 1 : 0;
     removedNotes.notes = newRemovedNotes;
     
+    console.log("NOTE: " + note);
+    console.log("REMOVED NOTES LENGTH: " + removedNotes.notes.length);
+
     //Update removed notes
     await db.update({
         TableName: 'notes-db',
